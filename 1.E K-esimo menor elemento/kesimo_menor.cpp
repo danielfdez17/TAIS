@@ -1,7 +1,9 @@
 
 /*@ <answer>
  *
- * Nombre y Apellidos: Daniel Fernandez Ortiz
+ * Nombre, apellidos y usuario del juez (TAISXX) de los autores de la solución.
+ * Luis Rebollo Cocera: TAIS53
+ * Daniel Fernandez Ortiz: TAIS21
  *
  *@ </answer> */
 
