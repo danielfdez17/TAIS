@@ -1,4 +1,3 @@
-
 /*@ <answer>
  *
  * Nombre y Apellidos: Daniel Fernandez Ortiz
@@ -32,12 +31,12 @@ bool ok(int i, int j, int f, int c) {
     return 0 <= i && i < f && 0 <= j && j < c;
 }
 
-int dfs(int fila, int columna, vector<vector<char>>const&tablero, vector<vector<bool>>&visitados) {
+int dfs(int const& F, int const&C, int fila, int columna, vector<vector<char>>const&tablero, vector<vector<bool>>&visitados) {
     int tam = 1; visitados[fila][columna] = true;
     for (int i = 0; i < MOVS; i++) {
         int f = fila + movimientos[i][0], c = columna + movimientos[i][1];
-        if (ok(f, c, tablero.size(), tablero[0].size()) && tablero[f][c] == '#' && !visitados[f][c])
-            tam += dfs(f, c, tablero, visitados);
+        if (ok(f, c, F, C) && tablero[f][c] == '#' && !visitados[f][c])
+            tam += dfs(F, C, f, c, tablero, visitados);
     }
     return tam;
 }
@@ -56,11 +55,11 @@ bool resuelveCaso() {
             cin >> tablero[i][j];
         }
     }
-    int manchas = 0, max_tam = -1;
+    int manchas = 0, max_tam = 0;
     for (int i = 0; i < filas; i++) {
         for (int j = 0; j < columnas; j++) {
             if (!visitados[i][j] && tablero[i][j] == '#') {
-                max_tam = std::max(max_tam, dfs(i, j, tablero, visitados));
+                max_tam = std::max(max_tam, dfs(filas, columnas, i, j, tablero, visitados));
                 manchas++;
             }
         }
