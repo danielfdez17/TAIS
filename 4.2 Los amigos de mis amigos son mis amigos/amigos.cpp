@@ -38,7 +38,7 @@ void resuelveCaso() {
     int n, m;
     cin >> n >> m;
     vector<vector<int>>matriz(n, vector<int>(0));
-    vector<bool>visitados(m, false);
+    vector<bool>visitados(n, false);
     int a, b;
     for (int i = 0; i < m; i++) {
         cin >> a >> b;
