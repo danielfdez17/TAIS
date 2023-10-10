@@ -7,6 +7,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <queue>
 #include"Grafo.h"
 using namespace std;
 
@@ -24,23 +28,111 @@ using namespace std;
 // ================================================================
 //@ <answer>
 
+class noticia {
+   private:
+   vector<bool>visitados, ya_contado;
+   vector<int>conocidos;
+   int dfs(Grafo const& g, int v) {
+      visitados[v] = true;
+      int tam = 1;
+      for (int w : g.ady(v))
+         if (!visitados[w])
+            tam += dfs(g, w);
+      return tam;
+      
+   }
+   public:
+   noticia(Grafo const& g) : visitados(g.V(), false), ya_contado(g.V(), false), conocidos(g.V(), 0) {
+      for (int i = 0; i < g.V(); i++) {
+         if (!visitados[i]) {
+            int amigos = dfs(g, i);
+            for (int j = 0; j < visitados.size(); j++) {
+               if (visitados[j] && !ya_contado[j]) {
+                  conocidos[j] = amigos;
+                  ya_contado[j] = true;
+               }
+            }
+         }
+      }
+   }
+   vector<int>getConocidos() {
+      return conocidos;
+   }
+};
+
+// int bfs(Grafo const& g, int v) {
+//    queue<int>cola;
+//    cola.push(v);
+//    vector<bool>visitados(g.V(), false);
+//    visitados[v] = true;
+//    int adyacentes = 1;
+//    while (!cola.empty()) {
+//       int front = cola.front(); cola.pop();
+//       for (int w : g.ady(front)) {
+//          if (!visitados[w]) {
+//             cola.push(w);
+//             visitados[w] = true;
+//             adyacentes++;
+//          }
+//       }
+//    }
+//    return adyacentes;
+// }
+
+// int dfs(Grafo const& g, int v, vector<bool>&visitados) {
+//    int tam = 1;
+//    visitados[v] = true;
+//    for (int w : g.ady(v)) 
+//       if (!visitados[w])
+//          tam += dfs(g, w, visitados);
+//    return tam;
+// }
 
 
 bool resuelveCaso() {
-    int vertices, aristas; cin >> vertices >> aristas;   
-    if (!cin) return false;
+   int vertices, aristas; cin >> vertices >> aristas;   
+   if (!cin) return false;
 
-    Grafo g(vertices);
+   Grafo g(vertices);
+   // cin.ignore();
 
-    for (int i = 0; i < aristas; i++) {
-        // usar stringstream de pcom
-    }
+   for (int i = 0; i < aristas; i++) {
+      int size; cin >> size;
+      if (size != 0) {
+         int a, b; cin >> a;
+         for (int j = 0; j < size - 1; j++) {
+            cin >> b;
+            g.ponArista(a - 1, b - 1);
+            a = b;
+         }
+      }
+      // string linea; getline(cin, linea);
+      // stringstream ss(linea);
+      // int usuarios, nodo;
+      // ss >> usuarios;
+      // vector<int>v;
+      // while (ss >> nodo) {
+      //    v.push_back(nodo);
+      // }
+      // for (int j = 0; j < usuarios; j++) {
+      //    for (int k = j + 1; k < usuarios; k++) {
+      //       g.ponArista(v[j] - 1, v[k] - 1);
+      //    }
+      // }
+   }
+   noticia n(g);
+   for (int i : n.getConocidos()) 
+      cout << i << " ";
+   // for (int i = 0; i < vertices; i++) {
+   //    vector<bool>visitados(vertices, false);
+   //    cout << dfs(g, i, visitados) << " ";
+   //    // cout << bfs(g, i) << " ";
+   // }
+   cout << "\n";
 
-    // resolver el caso posiblemente llamando a otras funciones
 
-    // escribir la solución
 
-    return true;
+   return true;
 }
 
 //@ </answer>
