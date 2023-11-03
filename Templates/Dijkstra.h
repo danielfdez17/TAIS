@@ -14,6 +14,14 @@ private:
     vector<Valor>dist;
     vector<AristaDirigida<Valor>>ulti;
     IndexPQ<Valor>pq;
+    void relajar(AristaDirigida<Valor>a) {
+    int v = a.desde(), w = a.hasta();
+    if (dist[w] > dist[v] + a.valor()) {
+        dist[w] = dist[v] + a.valor();
+        ulti[w] = a;
+        pq.update(w, dist[w]);
+    }
+}
 public:
     Dijkstra(DigrafoValorado<Valor> const&g, int orig) : origen(orig), dist(g.V(), INF), ulti(g.V()) pq(g.V()) {
         dist[origen] = 0;
