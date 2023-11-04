@@ -47,9 +47,10 @@ bool resuelveCaso() {
     int i = 0, j = 0, reutilizadas = 0;
     while (i < n && j < m) {
         if (jugadores[i] == equipaciones[j] || jugadores[i] + 1 == equipaciones[j]) {
-            ++reutilizadas; ++i;
+            ++reutilizadas; ++i; ++j;
         }
-        ++j;
+        else if (jugadores[i] > equipaciones[j]) ++j;
+        else ++i;
     }
 
     cout << n - reutilizadas << "\n";
