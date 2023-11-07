@@ -30,7 +30,7 @@ struct building {
     int beginning, end;
 };
 bool operator<(building const& left, building const& right) {
-    return left.beginning < right.beginning;
+    return left.end < right.end;
 }
 
 bool resuelveCaso() {
