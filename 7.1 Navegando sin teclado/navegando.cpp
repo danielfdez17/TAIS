@@ -9,9 +9,11 @@
 #include <fstream>
 #include <vector>
 #include <queue>
+#include <climits>
 #include"DigrafoValorado.h"
+#include"IndexPQ.h"
 using namespace std;
-
+#define INF 10001
 
 /*@ <answer>
 
@@ -28,34 +30,46 @@ del tamaño del problema.
 //@ <answer>
 
 
-class SOL {
+using Camino = deque<int>;
+
+template<typename Valor>
+class Dijkstra {
 private:
-    int coste, origen, destino, v;
-    vector<bool>visitados;
-    vector<int>tiempos_de_carga;
+    // const Valor INF = std::numeric_limits<Valor>::max();
+    int origen;
+    vector<Valor>dist;
+    vector<AristaDirigida<Valor>>ulti;
+    IndexPQ<Valor>pq;
+    vector<int>tiempos;
+    void relajar(AristaDirigida<Valor>a) {
+    int v = a.desde(), w = a.hasta();
+    if (dist[w] > dist[v] + a.valor()) {
+        dist[w] = dist[v] + a.valor() + tiempos[a.hasta()];
+        ulti[w] = a;
+        pq.update(w, dist[w]);
+    }
+}
 public:
-    SOL(DigrafoValorado<int>const& g, vector<int>const& tiempos) : coste(0), origen(0), v(g.V()), destino(v - 1), tiempos_de_carga(tiempos) {
-        queue<int>cola;
-        cola.push(0); visitados[0] = true;
-        while (!cola.empty()) {
-            int v = cola.front(); cola.pop();
-            for (auto arista : g.ady(v)) {
-                if (arista.hasta() == v - 1) {
-                    visitados[v - 1] = true;
-                    break;
-                }
-                if (!visitados[arista.hasta()]) {
-                    visitados[arista.hasta()] = true;
-                    cola.push(arista.hasta());
-                    // TODO
-                    // coste++;
-                }
-            }
+    Dijkstra(DigrafoValorado<Valor> const&g, int orig, vector<int>const& t) : origen(orig), dist(g.V(), INF), ulti(g.V()), pq(g.V()), tiempos(t) {
+        dist[origen] = tiempos[origen];
+        pq.push(origen, 0);
+        while (!pq.empty()) {
+            int v = pq.top().elem; pq.pop();
+            for (auto a : g.ady(v))
+                relajar(a);
         }
     }
-    bool hayCamino() const { return visitados[v - 1]; }
-    int getCoste() const { return coste; }
+    bool hayCamino(int v) const { return dist[v] != INF; }
+    Valor distancia(int v) const { return dist[v]; }
 
+    // Camino<Valor> camino(int v) const {
+    //     Camino<valor> cam;
+    //     AristaDirigida<Valor>a;
+    //     for (a = ulti[v]; a.desde() != origen; a = ulti[a.desde()])
+    //         cam.push_front(a);
+    //     cam.push_front(a);
+    //     return cam;
+    // }
 };
 
 
@@ -77,10 +91,10 @@ bool resuelveCaso() {
         grafo.ponArista({a - 1, b - 1, c});
     }
 
-    // SOL sol(grafo, tiempos_de_carga);
+    Dijkstra<int>d(grafo, 0, tiempos_de_carga);
 
-    // if (!sol.hayCamino()) cout << "IMPOSIBLE\n";
-    // else cout << sol.coste << "\n";
+    if (d.hayCamino(n - 1)) cout << d.distancia(n - 1) << "\n";
+    else cout << "IMPOSIBLE\n";
 
 
     return true;
@@ -90,18 +104,18 @@ bool resuelveCaso() {
 //  Lo que se escriba dejado de esta línea ya no forma parte de la solución.
 
 int main() {
-// ajustes para que cin extraiga directamente de un fichero
-#ifndef DOMJUDGE
-std::ifstream in("casos.txt");
-auto cinbuf = std::cin.rdbuf(in.rdbuf());
-#endif
+    // ajustes para que cin extraiga directamente de un fichero
+    #ifndef DOMJUDGE
+    std::ifstream in("casos.txt");
+    auto cinbuf = std::cin.rdbuf(in.rdbuf());
+    #endif
 
-while (resuelveCaso());
+    while (resuelveCaso());
 
-// para dejar todo como estaba al principio
-#ifndef DOMJUDGE
-std::cin.rdbuf(cinbuf);
-system("PAUSE");
-#endif
-return 0;
+    // para dejar todo como estaba al principio
+    #ifndef DOMJUDGE
+    std::cin.rdbuf(cinbuf);
+    system("PAUSE");
+    #endif
+    return 0;
 }
