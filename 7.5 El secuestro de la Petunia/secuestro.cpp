@@ -12,8 +12,8 @@
 #include <deque>
 #include <climits>
 using namespace std;
-using Camino = deque<int>;
 
+#define INF 1000000000
 
 /*@ <answer>
 
@@ -30,25 +30,30 @@ using Camino = deque<int>;
 //@ <answer>
 
 
-template<typename Valor>
 class Dijkstra {
 private:
-    const Valor INF = numeric_limits<Valor>::max();
     int origen, pueblos, max_dist;
-    vector<Valor>dist;
-    vector<AristaDirigida<Valor>>ulti;
-    IndexPQ<Valor>pq;
-    void relajar(AristaDirigida<Valor>a) {
+    vector<bool>visitados;
+    vector<int>dist;
+    IndexPQ<int>pq;
+    void relajar(AristaDirigida<int>a) {
         int v = a.desde(), w = a.hasta();
-        if (dist[w] > dist[v] + a.valor() && dist[w] <= d) {
-            ++pueblos;
+        if (dist[w] > dist[v] + a.valor()) {
             dist[w] = dist[v] + a.valor();
-            ulti[w] = a;
+            if (dist[w] <= max_dist && !visitados[w]) {
+                visitados[w] = true;   
+                ++pueblos;
+            }
             pq.update(w, dist[w]);
         }
     }
 public:
-    Dijkstra(DigrafoValorado<Valor> const&g, int d, int b) : origen(orig), dist(g.V(), INF), ulti(g.V()) pq(g.V()), pueblos(b), max_dist(d) {
+    Dijkstra(int V, int d, int b) : dist(V, INF), 
+    pq(V), pueblos(b), max_dist(d), visitados(V, false) {
+    }
+    bool hayCamino(int v) const { return dist[v] != INF; }
+    int distancia(int v) const { return dist[v]; }
+    void dijkstra(DigrafoValorado<int>const&g) {
         // dist[origen] = 0;
         // pq.push(origen, 0);
         while (!pq.empty()) {
@@ -57,21 +62,11 @@ public:
                 relajar(a);
         }
     }
-    bool hayCamino(int v) const { return dist[v] != INF; }
-    Valor distancia(int v) const { return dist[v]; }
-
-    Camino<Valor> camino(int v) const {
-        Camino<valor> cam;
-        AristaDirigida<Valor>a;
-        for (a = ulti[v]; a.desde() != origen; a = ulti[a.desde()])
-            cam.push_front(a);
-        cam.push_front(a);
-        return cam;
-    }
 
     void pushPQ(int v) {
-        pq.push(v);
+        pq.push(v, 0);
         dist[v] = 0;
+        visitados[v] = true;
     }
     int getPueblos() const {
         return pueblos;
@@ -94,12 +89,12 @@ bool resuelveCaso() {
     }
 
     int b; cin >> b;
-    Dijkstra<int> dijkstra(digrafo, d, b);
+    Dijkstra dijkstra(v, d, b);
     for (int i = 0; i < b; i++) {
         int v; cin >> v;
-        dijkstra.pushPQ(v);
+        dijkstra.pushPQ(v - 1);
     }
-    
+    dijkstra.dijkstra(digrafo);
     cout << dijkstra.getPueblos() << "\n";
 
     return true;
