@@ -37,7 +37,7 @@ bool resuelveCaso() {
 
    for (int i = 0; i < F; i++) {
       for (int j = 0; j < C; j++) {
-         char c; cin >> c;
+         char c; cin >> c; 
          mapa[i][j] = c;
       }
    }
