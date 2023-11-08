@@ -32,12 +32,13 @@ using namespace std;
 class Dijkstra {
 private:
     int origen;
-    vector<int>dist, caminos;
+    vector<int>dist, caminos, aristas;
     IndexPQ<int>pq;
     void relajar(AristaDirigida<int>a) {
         int v = a.desde(), w = a.hasta();
         if (dist[w] > dist[v] + a.valor()) {
             dist[w] = dist[v] + a.valor();
+            aristas[w] = aristas[v] + 1;
             pq.update(w, dist[w]);
         }
     }
@@ -47,16 +48,17 @@ private:
         while (!cola.empty()) {
             int v = cola.front(); cola.pop();
             for (auto w : g.ady(v)) {
-                if (!visitados[w.desde()]) {
-                    visitados[w.desde()] = true;
-                    caminos[w.desde()] = caminos[v] + 1;
-                    cola.push(w.desde());
+                if (!visitados[w.hasta()]) {
+                    visitados[w.hasta()] = true;
+                    caminos[w.hasta()] = caminos[v] + 1;
+                    cola.push(w.hasta());
                 }
             }
         }
     }
 public:
-    Dijkstra(DigrafoValorado<int> const&g, int orig) : origen(orig), dist(g.V(), INF), caminos(g.V(), 0), pq(g.V()) {
+    Dijkstra(DigrafoValorado<int> const&g, int orig) : origen(orig), dist(g.V(), INF), 
+    caminos(g.V(), 0), aristas(g.V(), 0), pq(g.V()) {
         dist[origen] = 0; 
         pq.push(origen, 0);
         while (!pq.empty()) {
@@ -69,7 +71,11 @@ public:
     bool hayCamino(int v) const { return dist[v] != INF; }
     int distancia(int v) const { return dist[v]; }
     void mostrar(int v) const {
-        if (dist[v] != INF) cout << dist[v] << " " << caminos[v] << "\n";
+        if (dist[v] != INF) {
+            cout << dist[v] << " ";
+            if (aristas[v] == caminos[v]) cout << "SI\n";
+            else cout << "NO\n";
+        }
         else cout << "SIN CAMINO\n";
     }
 };
