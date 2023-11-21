@@ -8,10 +8,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "EnterosInf.h"
 using namespace std;
-
-#define MAX_VALOR 500
-#define MAX_SECTORES 50
 
 
 /*@ <answer>
@@ -19,6 +17,10 @@ using namespace std;
  Escribe aquí un comentario general sobre la solución, explicando cómo
  se resuelve el problema y cuál es el coste de la solución, en función
  del tamaño del problema.
+
+ dianas(i, j) = nº minimo de dardos (1 hasta i) hasta conseguir la puntuacion j. Si no se puede, return INFINITO;
+ dianas(i, j) = {dianas(i - 1, j) <=> puntuaciones[i] > j}
+              = {min(dianas(i - 1, j), dianas(i, j - puntuaciones[i]) + 1) <=> puntuaciones[i] <= j}
 
  @ </answer> */
 
@@ -29,32 +31,55 @@ using namespace std;
 //@ <answer>
 
 struct solucion {
-    int n_dardos;
+    EntInf nDardos;
     vector<int>dardos;
 };
 
-/*
-s == sector, o == objetivo
-sol(s, o)
-*/
+solucion dianasBottonUp(int v, int s, vector<int>const&sectores) {
+    EntInf nDardos;
+    vector<int>dardos;
+    vector<EntInf>dp(v + 1, Infinito);
+    dp[0] = 0;
+    for (int i = 1; i <= s; ++i) {
+        for (int j = sectores[i - 1]; j <= v; ++j) {
+            dp[j] = min(dp[j], dp[j - sectores[i - 1]] + 1);
+        }
+    }
+    nDardos = dp[v];
 
-solucion resolver(int objetivo, vector<int>const&sectores) {
-    return {};
+    if (nDardos == Infinito) return {nDardos, dardos};
+
+    int i = s, j = v;
+    while (j > 0) {
+        // Se tira el dardo en el sector i - 1
+        if (sectores[i - 1] <= j && dp[j] == dp[j - sectores[i - 1]] + 1) {
+            // Se guarda la puntuacion del sector
+            dardos.push_back(sectores[i - 1]);
+            // Y se actualiza el valor objetivo
+            j -= sectores[i - 1];
+        }
+        // Se prueba con el siguiente sector
+        else {
+            i--;
+        }
+    }
+
+    return {nDardos, dardos};
 }
 
 bool resuelveCaso() {
-    int objetivo, n_sectores; cin >> objetivo >> n_sectores;
+    int v, s; cin >> v >> s;
     if (!cin) return false;
-    vector<int>sectores(n_sectores);
-    for (int i = 0; i < n_sectores; ++i) {
+    vector<int>sectores(s);
+    for (int i = 0; i < s; ++i) {
         cin >> sectores[i];
     }
 
-    solucion sol = resolver(objetivo, sectores);
+    solucion sol = dianasBottonUp(v, s, sectores);
 
-    if (sol.n_dardos == 0) cout << "IMPOSIBLE\n";
+    if (sol.nDardos == Infinito) cout << "Imposible\n";
     else {
-        cout << sol.n_dardos << ": ";
+        cout << sol.nDardos << ": ";
         for (int i : sol.dardos) cout << i << " ";
         cout << "\n";
     }
