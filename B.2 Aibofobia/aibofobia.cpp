@@ -42,7 +42,7 @@ string palindromo(int i, int j, string palabra, Matriz<int>&dp) {
         return string(1, palabra[i]);
     // fuera de rango
     if (i > j) 
-        return "";
+        return ""; 
     // misma letra
     if (palabra[i] == palabra[j])
         return palabra[i] + palindromo(i + 1, j - 1, palabra, dp) + palabra[j];
