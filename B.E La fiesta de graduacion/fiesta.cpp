@@ -90,64 +90,158 @@ int canciones(int i, int j, Matriz<int>& dp, vector<string>const&lista1, vector<
     return dp[i][j] = max(canciones(i - 1, j, dp,  lista1, lista2), canciones(i, j - 1, dp,  lista1, lista2));
 }
 
-void reconstruir(Matriz<int>const&dp, int canciones, vector<string>&sol, vector<string>const&lista1, vector<string>const&lista2) {
-    // cout << dp << "\n";
-    int i = dp.numfils() - 1, j = dp.numcols() - 1;
-    while (i >= 0 && canciones != 0) {
-        j = dp.numcols() - 1;
-        while (j >= 0 && canciones != 0) {
-            if (lista2[i] == lista1[j]) {
-                --canciones;
-                sol.push_back(lista2[i]);
-                --i; --j;
-            }
-            else {
-                // Si se puede avanzar en las filas
-                if ((i - 1 > 0 || j == 0 && i > 0) && dp[i][j] == dp[i - 1][j]) {
-                    --i;
-                }
-                // Si se puede avanzar en las columnas
-                else if ((j - 1 > 0 || i == 0 && j > 0) && dp[i][j] == dp[i][j - 1]) {
-                    --j;
-                }
-                // Si solo se puede avanzar en las filas
-                // else if (j == 0 && i > 0 && dp[i][j] == dp[i - 1][j]) {
-                    
-                // }
-                // // Si solo se puede avanzar en las columnas
-                // else if (i == 0 && j > 0 && dp[i][j] == dp[i][j - 1]) {
+/*
+int rec(const vector<string>& l1, const vector<string>& l2, vector<string>& sol, const vector<vector<int>>& m, int i, int j, int c) {
 
-                // }
-            }
+    if (c == 0) { return 0; }
+
+    if (i == 0 && j == 0) {
+
+        if (l1[i] == l2[j]) {
+            sol.push_back(l1[i]);
+            c--;
+            return 0;
         }
     }
+    
+    if (i == 0 && j > 0) {
+        if (l1[i] == l2[j]) {
+            sol.push_back(l1[i]);
+            c--;
+            return 0;
+        }
+        rec(l1, l2, sol, m, i, j - 1, c);
+    
+    }
+    else if (j == 0 && i > 0) {
+        if (l1[i] == l2[j]) {
+            sol.push_back(l1[i]);
+            c--;
+            return 0;
+        }
+        rec(l1, l2, sol, m, i -1, j, c);
+    }
+    else {
+    
+        if (l1[i] == l2[j]) {
+            sol.push_back(l1[i]);
+            c--;
+            rec(l1, l2, sol, m, i - 1, j -1, c);
+        }
+        else {
+        
+            if (m[i][j] == m[i][j - 1]) {
+                rec(l1, l2, sol, m, i, j - 1, c);
+            }
+            else {
+                rec(l1, l2, sol, m, i - 1, j, c);
+            }
+        }
 
-    // while (i < filas && canciones != 0) {
-    //     j = 0;
-    //     while (j < columnas && canciones != 0) {
-    //         if (lista1[i] == lista2[j]) {
-    //             --canciones;
-    //             sol.push_back(lista1[i]);
-    //             ++i; ++j;
-    //         }
-    //         else {
-    //             if (i + 1 < filas && dp[i][j] == dp[i + 1][j]) {
-    //                 i++;
-    //             }
-    //             else if (j + 1 < columnas && dp[i][j] == dp[i][j + 1]) {
-    //                 j++;
-    //             }
-    //         }
-    //     }
-    // }
+    }
+    return 0;
 }
+*/
+
+void reconstruir(int i, int j, Matriz<int>const&dp, int&canciones, vector<string>&sol, vector<string>const&lista1, vector<string>const&lista2) {
+    if (canciones == 0) return;
+    if (i == 0 && j == 0) {
+        if (lista1[i] == lista2[j]) {
+            sol.push_back(lista1[i]);
+            --canciones;
+            return;
+        }
+    }
+    if (i == 0 && j > 0) {
+        if (lista1[i] == lista2[j]) {
+            sol.push_back(lista1[i]);
+            --canciones;
+            return;
+        }
+        reconstruir(i, j - 1, dp, canciones, sol, lista1, lista2);
+    }
+    if (j == 0 && i > 0) {
+        if (lista1[i] == lista2[j]) {
+            sol.push_back(lista1[i]);
+            --canciones;
+            return;
+            reconstruir(i - 1, j, dp, canciones, sol, lista1, lista2);
+        }
+    }
+    if (lista1[i] == lista2[j]) {
+        sol.push_back(lista1[i]);
+        --canciones;
+        reconstruir(i - 1, j - 1, dp, canciones, sol, lista1, lista2);
+        return;
+    }
+    if (dp[i][j] == dp[i][j - 1]) {
+        reconstruir(i, j - 1, dp, canciones, sol, lista1, lista2);
+        return;
+    }
+    if (dp[i][j] == dp[i - 1][j]) {
+        reconstruir(i - 1, j, dp, canciones, sol, lista1, lista2);
+        return;
+    }
+}
+
+// void reconstruir(Matriz<int>const&dp, int canciones, vector<string>&sol, vector<string>const&lista1, vector<string>const&lista2) {
+//     // cout << dp << "\n";
+//     int i = dp.numfils() - 1, j = dp.numcols() - 1;
+//     while (i >= 0 && canciones != 0) {
+//         j = dp.numcols() - 1;
+//         while (j >= 0 && canciones != 0) {
+//             if (lista2[i] == lista1[j]) {
+//                 --canciones;
+//                 sol.push_back(lista2[i]);
+//                 --i; --j;
+//             }
+//             else {
+//                 // Si se puede avanzar en las filas
+//                 if ((i - 1 > 0 || j == 0 && i > 0) && dp[i][j] == dp[i - 1][j]) {
+//                     --i;
+//                 }
+//                 // Si se puede avanzar en las columnas
+//                 else if ((j - 1 > 0 || i == 0 && j > 0) && dp[i][j] == dp[i][j - 1]) {
+//                     --j;
+//                 }
+//                 // Si solo se puede avanzar en las filas
+//                 // else if (j == 0 && i > 0 && dp[i][j] == dp[i - 1][j]) {
+                    
+//                 // }
+//                 // // Si solo se puede avanzar en las columnas
+//                 // else if (i == 0 && j > 0 && dp[i][j] == dp[i][j - 1]) {
+
+//                 // }
+//             }
+//         }
+//     }
+
+//     // while (i < filas && canciones != 0) {
+//     //     j = 0;
+//     //     while (j < columnas && canciones != 0) {
+//     //         if (lista1[i] == lista2[j]) {
+//     //             --canciones;
+//     //             sol.push_back(lista1[i]);
+//     //             ++i; ++j;
+//     //         }
+//     //         else {
+//     //             if (i + 1 < filas && dp[i][j] == dp[i + 1][j]) {
+//     //                 i++;
+//     //             }
+//     //             else if (j + 1 < columnas && dp[i][j] == dp[i][j + 1]) {
+//     //                 j++;
+//     //             }
+//     //         }
+//     //     }
+//     // }
+// }
 
 vector<string> canciones(vector<string>const& lista1, vector<string>const& lista2) {
     int filas = lista1.size(), columnas = lista2.size();
     Matriz<int>dp(columnas, filas, -1);
     vector<string>sol;
     int c = canciones(columnas - 1, filas - 1, dp, lista2, lista1);
-    reconstruir(dp, c, sol, lista1, lista2);
+    reconstruir(columnas - 1, filas - 1, dp, c, sol, lista2, lista1);
     return sol;
 }
 
