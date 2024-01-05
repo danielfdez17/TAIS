@@ -1,6 +1,6 @@
 #include"GrafoValorado.h"
 #include"ConjuntosDisjuntos.h"
-#include<PriorityQueue.h>
+#include"PriorityQueue.h"
 using namespace std;
 
 template<typename Valor>
