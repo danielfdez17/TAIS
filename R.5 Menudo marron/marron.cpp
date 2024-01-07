@@ -30,13 +30,15 @@ const int INF = std::numeric_limits<int>::max();
 
 class solution {
 private:
-    Grafo g;
     int cheaperPrice;
-    void query(int s, vector<int>const&supermarkets) {
+    vector<int>queries;
+    // vector<bool>visited;
+    void bfs(Grafo const&g, vector<int>const&supermarkets, int s) {
         queue<int>q;
-        vector<bool>visited(g.V(), false);
         q.push(s);
-        cheaperPrice = min(INF, supermarkets[s]);
+        queries[s] = min(queries[s], supermarkets[s]);
+        // cheaperPrice = min(INF, supermarkets[s]);
+        vector<bool>visited(g.V(), false);
         visited[s] = true;
         while (!q.empty()) {
             int front = q.front(); q.pop();
@@ -44,22 +46,32 @@ private:
                 if (!visited[w]) {
                     visited[w] = true;
                     q.push(w);
-                    cheaperPrice = min(cheaperPrice, supermarkets[w]);
+                    queries[w] = min(queries[w], supermarkets[front]);
+                    // cheaperPrice = min(cheaperPrice, supermarkets[w]);
                 }
             }
         }
     }
+    // void query(int s, vector<int>const&supermarkets) {
+    // }
 public:
-    solution(Grafo const&g) : g(g) {
-        // for (int i = 0; i < markets.size(); ++i) 
-        //     supermarkets.push_back(markets[i]);
+    solution(Grafo const&g, vector<int>const&supermarkets) : queries(g.V(), INF) {
+        for (int i = 0; i < g.V(); ++i) {
+            bfs(g, supermarkets, i);
+        }
     }
-    void print(int s, vector<int>const&supermarkets) {
-        query(s, supermarkets);
-        if (cheaperPrice == INF)
+    // void print(int s, vector<int>const&supermarkets) {
+    //     query(s, supermarkets);
+    //     if (cheaperPrice == INF)
+    //         cout << "MENUDO MARRON\n";
+    //     else 
+    //         cout << cheaperPrice << "\n";
+    // }
+    void printSol(int node) const {
+        if (queries[node] == INF) 
             cout << "MENUDO MARRON\n";
-        else 
-            cout << cheaperPrice << "\n";
+        else
+            cout << queries[node] << "\n";
     }
 };
 
@@ -80,10 +92,10 @@ bool resuelveCaso() {
         supermarkets[node] = price;
     }
     int k; cin >> k;
-    solution sol(g);
+    solution sol(g, supermarkets);
     for (int i = 0; i < k; ++i) {
         cin >> s;
-        sol.print(s - 1, supermarkets);
+        sol.printSol(s - 1);
     }
     cout << "---\n";
     return true;
