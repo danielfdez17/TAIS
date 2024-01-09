@@ -6,7 +6,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 using namespace std;
+#define MOD 1000000000;
 
 /*@ <answer>
 
@@ -21,14 +23,23 @@ using namespace std;
 // Escribe el código completo de tu solución aquí debajo
 // ================================================================
 //@ <answer>
+int throwingDice(int k, int s) {
+   vector<vector<int>>dp(k, vector<int>(s + 1, 1));
+
+   for (int i = 1; i < k; ++i) {
+      for (int j = 1; j <= s; ++j) {
+         dp[i][j] = dp[i - 1][j];
+         if (j > i)
+            dp[i][j] += dp[i][j - i - 1];
+      }
+   }
+
+   return dp[k - 1][s];
+}
 
 void resuelveCaso() {
-
-   // leer los datos de la entrada
-
-   // resolver el caso posiblemente llamando a otras funciones
-
-   // escribir la solución
+      int k, s; cin >> k >> s;
+      cout << throwingDice(k, s) << "\n";
 }
 
 //@ </answer>
